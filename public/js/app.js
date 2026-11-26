@@ -26,7 +26,10 @@ async function render() {
     else $app.innerHTML = '<p class="msg">Página no encontrada. <a href="#/">Ir al catálogo</a></p>';
   } catch (e) {
     console.error(e);
-    $app.innerHTML = `<p class="msg error">No se pudo cargar: ${h(e.message)}. Revisa tu conexión y las reglas de Firestore.</p>`;
+    const msg = e.code === "permission-denied"
+      ? "Sin permisos: revisa las reglas de Firestore y tu UID de admin"
+      : "No se pudo cargar: " + e.message;
+    $app.innerHTML = `<p class="msg error">${h(msg)}</p>`;
   }
 }
 
