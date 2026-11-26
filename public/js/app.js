@@ -72,7 +72,7 @@ async function showAdmin() {
       <label for="availability">Disponibilidad</label><select id="availability">${AVAILABILITY.map((a) => `<option>${a}</option>`).join("")}</select>
       <label>Fotografías (1 a ${MAX_PHOTOS})</label><div class="slots" id="slots"></div>
       <input type="file" id="files" accept="image/*" multiple><div class="err" data-e="photos"></div>
-      <p style="display:flex;gap:.6rem"><button class="btn" id="save">Guardar producto</button><button type="button" class="btn ghost" id="reset">Limpiar</button></p>
+      <p style="display:flex;gap:.6rem"><button class="btn" id="save">Guardar producto</button><button type="button" class="btn ghost" id="btnClear">Limpiar</button></p>
     </form>
     <div class="panel"><h3>Productos (${list.length})</h3>${list.map((p) => `<div class="arow"><img src="${h(p.thumb)}" alt=""><div class="n"><strong>${h(p.name)}</strong><br><small>${formatPrice(p.price, APP)} · ${p.availability}</small></div>
       <a class="btn ghost" href="#/producto/${p.id}">Ver</a><button class="btn ghost" data-edit="${p.id}">Editar</button><button class="btn danger" data-del="${p.id}">Borrar</button></div>`).join("") || '<p class="msg">Todavía no hay productos. Crea el primero arriba.</p>'}</div>`;
@@ -95,7 +95,7 @@ function updMargin() {
 
 function bindAdmin() {
   document.getElementById("out").addEventListener("click", () => authM.signOut(auth));
-  document.getElementById("reset").addEventListener("click", resetForm);
+  document.getElementById("btnClear").addEventListener("click", resetForm);
   ["price", "cost"].forEach((id) => document.getElementById(id).addEventListener("input", updMargin));
   document.getElementById("files").addEventListener("change", async (e) => {
     for (const file of e.target.files) {
