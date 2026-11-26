@@ -1,0 +1,12 @@
+{
+  "name": "elflamingo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Catálogo de consulta (SPA) con Firebase Firestore",
+  "scripts": {
+    "start": "python3 server.py",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" }
+}
