@@ -14,3 +14,6 @@
 - [x] T13 Mensajes de error precisos
 - [x] T14 Módulo errors.js con pruebas
 - [x] T15 Módulo product.js con pruebas
+- [x] T18 Módulo settings.js con pruebas (tema system/light/dark, persistencia en localStorage `elflamingo.settings`, tolerante a fallos) (RF-09)
+- [x] T19 Estilos de tema: `data-theme`, variables claras/oscuras, `color-scheme`, estilos del botón de configuración y del dialog (RF-09)
+- [x] T20 Interfaz del panel: botón `#settingsBtn`, `dialog#settings`, `initSettings()` en settings-ui.js; script inline sin parpadeo (RF-09)
