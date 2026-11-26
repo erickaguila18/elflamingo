@@ -10,3 +10,5 @@
 - [ ] T09 Prueba manual extremo a extremo con datos reales
 - [ ] T10 Pruebas de reglas con Firebase Emulator (opcional)
 - [ ] T11 Número de WhatsApp en `config.js` (RF-08)
+- [x] T12 Corregir reset del formulario admin
+- [x] T13 Mensajes de error precisos

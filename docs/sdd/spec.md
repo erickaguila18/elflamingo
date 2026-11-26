@@ -18,6 +18,7 @@
 - Dado un nombre con `<script>`, entonces se muestra como texto (sin ejecutarse).
 - Dado un producto agotado, entonces la galería lo marca y el detalle dice «Agotado».
 - Dado un id inexistente en la URL, entonces se muestra «Este producto ya no existe».
+- Dado el panel admin, cuando se abre, entonces el formulario se limpia sin errores en la consola.
 
 ## Fuera de alcance (v1)
 Carrito, pagos, múltiples admins, categorías, paginación.
