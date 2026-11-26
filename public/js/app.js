@@ -87,7 +87,7 @@ function drawSlots() {
   document.getElementById("slots").innerHTML = photos.map((s, i) => `<div class="slot"><img src="${h(s)}" alt=""><button type="button" data-rm="${i}" aria-label="Quitar foto">×</button></div>`).join("");
   document.querySelectorAll("[data-rm]").forEach((b) => b.addEventListener("click", () => { photos.splice(+b.dataset.rm, 1); drawSlots(); }));
 }
-function resetForm() { editId = null; photos = []; f().reset(); document.getElementById("ft").textContent = "Nuevo producto"; drawSlots(); updMargin(); }
+function resetForm() { editId = null; photos = []; HTMLFormElement.prototype.reset.call(f()); document.getElementById("ft").textContent = "Nuevo producto"; drawSlots(); updMargin(); }
 function updMargin() {
   const m = margin(parsePrice(fv("price")), parsePrice(fv("cost")));
   document.getElementById("mg").textContent = m === null ? "" : `Margen: ${m}%`;
