@@ -1,6 +1,6 @@
 # Plan técnico
 ## Arquitectura
-`public/` (estático) → `index.html` + `js/app.js` (UI y eventos) · `views.js` (HTML puro) · `store.js` (Firestore) · `firebase.js` (carga dinámica del SDK por CDN, versión en `config.js`) · `validation.js`, `format.js`, `router.js`, `images.js` (lógica pura, probada).
+`public/` (estático) → `index.html` + `js/app.js` (UI y eventos) · `views.js` (HTML puro) · `store.js` (Firestore) · `firebase.js` (carga dinámica del SDK por CDN, versión en `config.js`) · `validation.js`, `format.js`, `router.js`, `images.js`, `errors.js`, `product.js` (lógica pura, probada).
 Router por hash (`#/`, `#/producto/:id`, `#/admin`): funciona en cualquier servidor estático.
 
 ## Modelo de datos (Firestore, plan Spark)
