@@ -1,0 +1,1 @@
+Revisa los cambios contra `constitution.md` y `spec.md`: privacidad del precio de inversión, escape de HTML, reglas de Firestore, límite 1 a 4 fotos, cobertura de pruebas. Lista hallazgos por severidad.

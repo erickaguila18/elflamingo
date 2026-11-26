@@ -1,0 +1,12 @@
+# Tareas
+- [x] T01 Estructura, servidor Python, `.gitignore`, `package.json`
+- [x] T02 Módulos puros + pruebas (validation, format, router, images)
+- [x] T03 Capa Firestore (`store.js`) y reglas
+- [x] T04 Vista catálogo + búsqueda (RF-01, RF-02)
+- [x] T05 Vista detalle con galería (RF-03, RF-07)
+- [x] T06 Login y panel admin: alta, edición, borrado (RF-04, RF-05, RF-06)
+- [x] T07 CI de pruebas y workflow de GitHub Pages
+- [ ] T08 Configurar en consola: Auth email/contraseña, crear Firestore, pegar UID en reglas (ver README)
+- [ ] T09 Prueba manual extremo a extremo con datos reales
+- [ ] T10 Pruebas de reglas con Firebase Emulator (opcional)
+- [ ] T11 Número de WhatsApp en `config.js` (RF-08)
