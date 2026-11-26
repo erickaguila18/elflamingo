@@ -8,6 +8,7 @@ import { validateProduct, parsePrice, margin, MAX_PHOTOS, AVAILABILITY } from ".
 import { compressImage, resizeDataUrl } from "./images.js";
 import { describeError } from "./errors.js";
 import { buildProduct } from "./product.js";
+import { initSettings } from "./settings-ui.js";
 
 const $app = document.getElementById("app");
 const $search = document.getElementById("search");
@@ -144,6 +145,7 @@ async function onSave(e) {
 /* ---------- Arranque ---------- */
 $search.addEventListener("input", () => { q = $search.value; if (parseRoute(location.hash).name === "list" && cache) $app.innerHTML = listHTML(cache, q); });
 window.addEventListener("hashchange", render);
+initSettings();
 authM.onAuthStateChanged(auth, (u) => {
   const was = !!user; user = u;
   document.getElementById("adminLink").textContent = u ? "Panel" : "Admin";

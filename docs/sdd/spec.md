@@ -10,6 +10,7 @@
 - **RF-06 Privacidad**: el precio de inversión solo lo lee el admin.
 - **RF-07 Enlace directo**: `#/producto/:id` es compartible.
 - **RF-08 WhatsApp (opcional)**: si `APP.whatsapp` está configurado, el detalle muestra botón de contacto.
+- **RF-09 Configuración**: el visitante puede elegir tema Sistema, Claro u Oscuro desde un botón de configuración.
 
 ## Criterios de aceptación
 - Dado un visitante sin sesión, cuando consulta `products_private`, entonces Firestore rechaza la lectura (RF-06).
@@ -19,6 +20,9 @@
 - Dado un producto agotado, entonces la galería lo marca y el detalle dice «Agotado».
 - Dado un id inexistente en la URL, entonces se muestra «Este producto ya no existe».
 - Dado el panel admin, cuando se abre, entonces el formulario se limpia sin errores en la consola.
+- Dada la preferencia "Sistema", cuando el dispositivo cambia entre claro y oscuro, entonces la app lo sigue sin recargar (RF-09).
+- Dada la preferencia "Oscuro" o "Claro", cuando se recarga la página, entonces se conserva sin parpadeo de color (RF-09).
+- Dado que localStorage no está disponible, entonces la app funciona con el tema "Sistema" y sin errores (RF-09).
 
 ## Fuera de alcance (v1)
 Carrito, pagos, múltiples admins, categorías, paginación.
