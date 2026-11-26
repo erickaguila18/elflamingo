@@ -48,6 +48,8 @@ input:not([type=file]):not([type=radio]),select,textarea{width:100%;padding:.6re
 #toast.on{opacity:1}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
+.top.no-search .adm { margin-left: auto; }
+
 /* ---------- Configuración (tema) ---------- */
 .settings-btn{display:inline-flex;align-items:center;justify-content:center;flex:none;width:2.6rem;height:2.6rem;padding:0;margin-left:.2rem;border:1.5px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);cursor:pointer}
 .settings-btn:hover{border-color:var(--pink);color:var(--pink)}

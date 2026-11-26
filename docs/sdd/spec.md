@@ -23,6 +23,7 @@
 - Dada la preferencia "Sistema", cuando el dispositivo cambia entre claro y oscuro, entonces la app lo sigue sin recargar (RF-09).
 - Dada la preferencia "Oscuro" o "Claro", cuando se recarga la página, entonces se conserva sin parpadeo de color (RF-09).
 - Dado que localStorage no está disponible, entonces la app funciona con el tema "Sistema" y sin errores (RF-09).
+- Dada cualquier ruta, el enlace Admin y el botón de configuración permanecen alineados a la derecha del encabezado, con o sin buscador.
 
 ## Fuera de alcance (v1)
 Carrito, pagos, múltiples admins, categorías, paginación.
