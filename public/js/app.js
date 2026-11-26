@@ -21,6 +21,7 @@ const products = async () => (cache ??= await store.listProducts());
 async function render() {
   const r = parseRoute(location.hash);
   $search.style.display = r.name === "list" ? "" : "none";
+  document.querySelector(".top").classList.toggle("no-search", r.name !== "list");
   $app.innerHTML = '<p class="msg">Cargando…</p>';
   try {
     if (r.name === "list") $app.innerHTML = listHTML(await products(), q);
