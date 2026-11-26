@@ -6,6 +6,8 @@ import { escapeHtml as h, formatPrice } from "./format.js";
 import { APP } from "./config.js";
 import { validateProduct, parsePrice, margin, MAX_PHOTOS, AVAILABILITY } from "./validation.js";
 import { compressImage, resizeDataUrl } from "./images.js";
+import { describeError } from "./errors.js";
+import { buildProduct } from "./product.js";
 
 const $app = document.getElementById("app");
 const $search = document.getElementById("search");
@@ -26,9 +28,7 @@ async function render() {
     else $app.innerHTML = '<p class="msg">Página no encontrada. <a href="#/">Ir al catálogo</a></p>';
   } catch (e) {
     console.error(e);
-    const msg = e.code === "permission-denied"
-      ? "Sin permisos: revisa las reglas de Firestore y tu UID de admin"
-      : "No se pudo cargar: " + e.message;
+    const msg = describeError(e);
     $app.innerHTML = `<p class="msg error">${h(msg)}</p>`;
   }
 }
@@ -126,8 +126,7 @@ async function editProduct(id) {
 
 async function onSave(e) {
   e.preventDefault();
-  const data = { name: fv("name").trim(), description: fv("description").trim(), price: parsePrice(fv("price")), availability: fv("availability") };
-  const cost = parsePrice(fv("cost"));
+  const { data, cost } = buildProduct({ name: fv("name"), description: fv("description"), price: fv("price"), cost: fv("cost"), availability: fv("availability") });
   const { valid, errors } = validateProduct({ ...data, cost }, photos.length);
   document.querySelectorAll("[data-e]").forEach((el) => (el.textContent = errors[el.dataset.e] ?? ""));
   if (!valid) return;

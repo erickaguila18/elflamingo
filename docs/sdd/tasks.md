@@ -12,3 +12,5 @@
 - [ ] T11 Número de WhatsApp en `config.js` (RF-08)
 - [x] T12 Corregir reset del formulario admin
 - [x] T13 Mensajes de error precisos
+- [x] T14 Módulo errors.js con pruebas
+- [x] T15 Módulo product.js con pruebas
