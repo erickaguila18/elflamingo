@@ -12,14 +12,16 @@ export function listHTML(products, q = "") {
   }
   return `<section class="grid">${items.map((p) => `
     <a class="tile" href="#/producto/${encodeURIComponent(p.id)}">
-      <div class="ph"><img src="${h(p.thumb)}" alt="${h(p.name)}" loading="lazy">${p.availability === "agotado" ? '<span class="tag">Agotado</span>' : ""}</div>
+      <div class="ph"><img src="${h(p.thumb)}" alt="${h(p.name)}" loading="lazy">${p.availability !== "disponible" ? `<span class="tag">${h(availabilityLabel(p.availability))}</span>` : ""}</div>
       <h3>${h(p.name)}</h3><span class="price">${money(p.price)}</span>
     </a>`).join("")}</section>`;
 }
 
 export function detailHTML(p, { pageUrl = "", whatsapp = APP.whatsapp } = {}) {
   const photos = p.photos?.length ? p.photos : [p.thumb];
-  const wa = contactUrl(whatsapp, p, { pageUrl, priceText: money(p.price) });
+  // RF-12: vendido → sin botón de WhatsApp; el resto de estados siguen igual.
+  const sold = p.availability === "vendido";
+  const wa = sold ? "" : contactUrl(whatsapp, p, { pageUrl, priceText: money(p.price) });
   const waLabel = p.availability === "disponible" ? "Preguntar por WhatsApp" : "Preguntar cuándo habrá";
   return `<a href="#/" class="adm">Volver al catálogo</a>
   <article class="detail" style="margin-top:1rem">
@@ -31,6 +33,7 @@ export function detailHTML(p, { pageUrl = "", whatsapp = APP.whatsapp } = {}) {
       <h1>${h(p.name)}</h1>
       <div class="price">${money(p.price)}</div>
       <p class="${p.availability === "disponible" ? "ok" : "bad"}">${availabilityLabel(p.availability)}</p>
+      ${sold ? `<p class="bad">Este juguete ya fue vendido.</p>` : ""}
       <p class="desc">${h(p.description)}</p>
       ${wa ? `<a class="btn" href="${h(wa)}" target="_blank" rel="noopener">${waLabel}</a>` : ""}
     </div>
@@ -39,14 +42,19 @@ export function detailHTML(p, { pageUrl = "", whatsapp = APP.whatsapp } = {}) {
 
 /* Resumen del panel admin (RF-10): `s` es el resultado de summarize().
  * Cuatro tarjetas: Productos · Inversión total · Valor de venta · Ganancia estimada.
+ * Productos: «N disponibles · N agotados · N vendidos».
+ * Ganancia estimada: total + «Realizada: X · Por realizar: Y» (+ «Margen: X%»).
  * Todo texto dinámico por escapeHtml; importes con formatPrice + APP. */
 export function summaryHTML(s) {
   const num = (n) => (typeof n === "number" && Number.isFinite(n) ? n : 0);
   const total = num(s?.totalProducts);
   const available = num(s?.available);
   const soldOut = num(s?.soldOut);
+  const sold = num(s?.sold);
   const withoutCost = num(s?.withoutCost);
   const profit = num(s?.profit);
+  const realizedProfit = num(s?.realizedProfit);
+  const pendingProfit = num(s?.pendingProfit);
   const marginPct = s?.marginPct ?? null;
   const hasMargin = marginPct !== null && Number.isFinite(marginPct);
   const profitClass = profit > 0 ? " ok" : profit < 0 ? " bad" : "";
@@ -57,11 +65,14 @@ export function summaryHTML(s) {
       <p class="summary-value${cls}">${value}</p>${sub}
     </article>`;
 
+  const profitSub = `<p class="summary-sub">Realizada: ${h(money(realizedProfit))} · Por realizar: ${h(money(pendingProfit))}</p>`
+    + (hasMargin ? `<p class="summary-sub">Margen: ${h(String(marginPct))}%</p>` : "");
+
   const cards = [
-    card("Productos", h(String(total)), `<p class="summary-sub">${h(String(available))} disponibles · ${h(String(soldOut))} agotados</p>`),
+    card("Productos", h(String(total)), `<p class="summary-sub">${h(String(available))} disponibles · ${h(String(soldOut))} agotados · ${h(String(sold))} vendidos</p>`),
     card("Inversión total", h(money(num(s?.investment)))),
     card("Valor de venta", h(money(num(s?.salesValue)))),
-    card("Ganancia estimada", h(money(profit)), hasMargin ? `<p class="summary-sub">Margen: ${h(String(marginPct))}%</p>` : "", profitClass),
+    card("Ganancia estimada", h(money(profit)), profitSub, profitClass),
   ].join("");
 
   const withoutCostNote = withoutCost > 0

@@ -99,8 +99,18 @@ async function showAdmin() {
       <p style="display:flex;gap:.6rem"><button class="btn" id="save">Guardar producto</button><button type="button" class="btn ghost" id="btnClear">Limpiar</button></p>
     </form>
     <div class="panel"><h3>Productos (${list.length})</h3>${list.map((p) => `<div class="arow"><img src="${h(p.thumb)}" alt=""><div class="n"><strong>${h(p.name)}</strong><br><small>${formatPrice(p.price, APP)} · ${p.availability}</small></div>
-      <a class="btn ghost" href="#/producto/${p.id}">Ver</a><button class="btn ghost" data-edit="${p.id}">Editar</button><button class="btn danger" data-del="${p.id}">Borrar</button></div>`).join("") || '<p class="msg">Todavía no hay productos. Crea el primero arriba.</p>'}</div>`;
+      <a class="btn ghost" href="#/producto/${p.id}">Ver</a><button class="btn ghost" data-edit="${p.id}">Editar</button><button class="btn danger" data-del="${p.id}">Borrar</button>${p.availability === "vendido" ? `<button class="btn ghost" data-unsold="${h(p.id)}">Revertir</button>` : `<button class="btn ghost" data-sold="${h(p.id)}">Marcar vendido</button>`}</div>`).join("") || '<p class="msg">Todavía no hay productos. Crea el primero arriba.</p>'}</div>`;
   bindAdmin();
+  // RF-12: marcar vendido sin borrar ni editar; revertir a disponible
+  $app.querySelectorAll("[data-sold]").forEach((b) => b.addEventListener("click", async () => {
+    if (!confirm("¿Marcar este producto como vendido?")) return;
+    try { await store.markSold(b.dataset.sold); toast("Marcado como vendido"); await showAdmin(); }
+    catch (e) { toast(describeError(e)); }
+  }));
+  $app.querySelectorAll("[data-unsold]").forEach((b) => b.addEventListener("click", async () => {
+    try { await store.markAvailable(b.dataset.unsold); toast("Vuelve a disponible"); await showAdmin(); }
+    catch (e) { toast(describeError(e)); }
+  }));
   resetForm();
 }
 

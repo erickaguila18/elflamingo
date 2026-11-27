@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { validateProduct, parsePrice, margin } from "../public/js/validation.js";
+import { validateProduct, parsePrice, margin, AVAILABILITY } from "../public/js/validation.js";
 
 const ok = { name: "Bolsa tejida", description: "Hecha a mano", price: 350, cost: 150, availability: "disponible" };
 
@@ -17,6 +17,12 @@ test("rechaza nombre corto, precio <= 0 y costo inválido", () => {
 });
 test("rechaza disponibilidad desconocida", () => {
   assert.ok(validateProduct({ ...ok, availability: "quizá" }, 1).errors.availability);
+});
+test("AVAILABILITY incluye disponible, agotado y vendido", () => {
+  assert.deepEqual(AVAILABILITY, ["disponible", "agotado", "vendido"]);
+});
+test("acepta disponibilidad vendido", () => {
+  assert.equal(validateProduct({ ...ok, availability: "vendido" }, 1).valid, true);
 });
 test("parsePrice limpia símbolos y rechaza vacío", () => {
   assert.equal(parsePrice("$1,250.50"), 1250.5);

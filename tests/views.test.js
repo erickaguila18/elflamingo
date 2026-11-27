@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { summaryHTML, detailHTML } from "../public/js/views.js";
+import { summaryHTML, detailHTML, listHTML } from "../public/js/views.js";
 import { summarize } from "../public/js/stats.js";
 import { formatPrice, escapeHtml } from "../public/js/format.js";
 import { APP } from "../public/js/config.js";
@@ -30,9 +30,34 @@ test("los importes formateados del ejemplo A + B de la spec", () => {
   assert.ok(html.includes("Margen: 30%"), "margen 30%");
 });
 
-test("Productos muestra el total con N disponibles · N agotados", () => {
+test("Productos muestra el total con N disponibles · N agotados · N vendidos", () => {
   const html = summaryHTML(summaryAB());
-  assert.ok(html.includes("1 disponibles · 1 agotados"), "1 disponibles · 1 agotados");
+  assert.ok(html.includes("1 disponibles · 1 agotados · 0 vendidos"), "1 disponibles · 1 agotados · 0 vendidos");
+});
+
+/* ---------- ganancia realizada vs por realizar (RF-10 + RF-12) ---------- */
+
+// A disponible 100/60 + B vendido 200/150 → total 90, realizada 50, por realizar 40, 1 vendido
+const summarySold = () => summarize([A, { id: "b", price: 200, availability: "vendido" }], COSTS);
+
+test("ganancia estimada total + debajo 'Realizada: X · Por realizar: Y'", () => {
+  const html = summaryHTML(summarySold());
+  assert.ok(html.includes(money(90)), `ganancia estimada total formateada ${money(90)}`);
+  assert.ok(
+    html.includes(`Realizada: ${money(50)} · Por realizar: ${money(40)}`),
+    "línea Realizada/Por realizar con importes formateados"
+  );
+  assert.ok(html.includes("Margen: 30%"), "el margen sigue apareciendo");
+});
+
+test("la línea de ganancia sale también sin vendidos (realizada 0, todo por realizar)", () => {
+  const html = summaryHTML(summaryAB()); // sin vendidos: realizada 0, por realizar 90
+  assert.ok(html.includes(`Realizada: ${money(0)} · Por realizar: ${money(90)}`));
+});
+
+test("Productos cuenta los vendidos", () => {
+  const html = summaryHTML(summarySold());
+  assert.ok(html.includes("1 disponibles · 0 agotados · 1 vendidos"), "1 disponibles · 0 agotados · 1 vendidos");
 });
 
 test("la línea de 'sin costo' solo aparece cuando withoutCost > 0", () => {
@@ -116,4 +141,33 @@ test("detailHTML no incluye el precio de inversión en el mensaje de WhatsApp", 
   const html = detailHTML({ ...WA_PRODUCT, cost: 424242 }, { whatsapp: WA_NUMBER, pageUrl: "https://x.test" });
   assert.ok(!html.includes("424242"));
   assert.ok(!html.includes(encodeURIComponent("424242")));
+});
+
+/* ---------- estado vendido (RF-12) ---------- */
+
+const SOLD = { id: "p1", name: "Osito", description: "Suave", price: 100, availability: "vendido", photos: ["x"], thumb: "x" };
+
+test("listHTML producto vendido muestra etiqueta 'Vendido' sobre la foto", () => {
+  const html = listHTML([SOLD]);
+  assert.ok(html.includes('<span class="tag">Vendido</span>'), "etiqueta Vendido");
+});
+
+test("listHTML la etiqueta aparece para cualquier estado distinto de 'disponible'", () => {
+  const tag = (a) => listHTML([{ ...SOLD, availability: a }]);
+  assert.ok(tag("agotado").includes('<span class="tag">Agotado</span>'), "agotado → Agotado");
+  assert.ok(tag("vendido").includes('<span class="tag">Vendido</span>'), "vendido → Vendido");
+  assert.ok(!tag("disponible").includes('class="tag"'), "disponible → sin etiqueta");
+});
+
+test("detailHTML producto vendido muestra 'Este juguete ya fue vendido.'", () => {
+  const html = detailHTML(SOLD, { whatsapp: WA_NUMBER });
+  assert.ok(html.includes("Este juguete ya fue vendido."), "mensaje de vendido");
+});
+
+test("detailHTML producto vendido NO muestra botón de WhatsApp aunque haya número", () => {
+  const html = detailHTML(SOLD, { whatsapp: WA_NUMBER, pageUrl: "https://x.test/#/producto/p1" });
+  assert.ok(!html.includes("wa.me"), "no hay enlace wa.me");
+  assert.ok(!html.includes("Preguntar por WhatsApp"), "no hay botón disponible");
+  assert.ok(!html.includes("Preguntar cuándo habrá"), "no hay botón agotado");
+  assert.ok(!html.includes("Preguntar"), "ningún botón de WhatsApp");
 });
