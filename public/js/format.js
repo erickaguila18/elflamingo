@@ -8,8 +8,3 @@ export function escapeHtml(s) {
 }
 
 export const availabilityLabel = (a) => (a === "disponible" ? "Disponible" : "Agotado");
-
-export function whatsappLink(number, text) {
-  const digits = String(number ?? "").replace(/\D/g, "");
-  return digits ? `https://wa.me/${digits}?text=${encodeURIComponent(text)}` : "";
-}

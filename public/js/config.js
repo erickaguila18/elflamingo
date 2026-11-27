@@ -8,4 +8,8 @@ export const firebaseConfig = {
   appId: "1:317543066765:web:8a01ca2569b5baecff86c4",
 };
 export const SDK_VERSION = "13.4.0"; // versión única del SDK; cámbiala aquí si no carga
-export const APP = { currency: "MXN", locale: "es-MX", whatsapp: "" }; // whatsapp: "521XXXXXXXXXX"
+export const APP = {
+  currency: "MXN",
+  locale: "es-MX",
+  whatsapp: "", // código de país + número, sin + ni espacios. Ej. 52XXXXXXXXXX
+};

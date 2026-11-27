@@ -22,3 +22,9 @@
 - [x] T23 Leer costos en store.js `listCosts` (RF-10)
 - [x] T24 Tarjetas de resumen en el panel admin
 - [x] T25 Pruebas de summaryHTML
+- [x] T26 Módulo contact.js con pruebas (normalizeWhatsapp, buildMessage, contactUrl) (RF-08)
+- [x] T27 Botón de WhatsApp en el detalle con mensaje prellenado (RF-08)
+- [x] T28 `resolveWhatsapp` en contact.js con pruebas (RF-11)
+- [x] T29 `getContact` / `saveContact` en store.js (RF-11)
+- [x] T30 Regla de Firestore para `site/{doc}`: lectura pública, escritura admin (RF-11)
+- [x] T31 Tarjeta "Contacto de WhatsApp" en el panel admin con Guardar (RF-11)

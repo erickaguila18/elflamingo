@@ -1,6 +1,6 @@
 // Modelo: products/{id} (+ /photos/{n}) público · products_private/{id} {cost} solo admin
 import { db, fsM } from "./firebase.js";
-const { collection, doc, getDocs, getDoc, writeBatch, query, orderBy, serverTimestamp } = fsM;
+const { collection, doc, getDocs, getDoc, setDoc, writeBatch, query, orderBy, serverTimestamp } = fsM;
 
 export async function listProducts() {
   const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
@@ -23,6 +23,17 @@ export async function getCost(id) {
 export async function listCosts() {
   const snap = await getDocs(collection(db, "products_private"));
   return Object.fromEntries(snap.docs.map((d) => [d.id, d.data().cost]));
+}
+
+// RF-11: número de WhatsApp público en site/contact; "" si no existe. Lectura pública.
+export async function getContact() {
+  const s = await getDoc(doc(db, "site", "contact"));
+  return s.exists() ? (s.data().whatsapp ?? "") : "";
+}
+
+// RF-11: guarda el número normalizado (solo admin por reglas de Firestore).
+export async function saveContact(number) {
+  await setDoc(doc(db, "site", "contact"), { whatsapp: number, updatedAt: serverTimestamp() });
 }
 
 export async function saveProduct({ id, data, cost, photos, thumb }) {
