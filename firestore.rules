@@ -20,5 +20,11 @@ service cloud.firestore {
     match /products_private/{id} {
       allow read, write: if isAdmin();
     }
+
+    // Sitio (número de WhatsApp público, etc.): cualquiera lee, solo el admin escribe
+    match /site/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }

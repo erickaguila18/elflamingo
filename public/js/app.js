@@ -10,6 +10,7 @@ import { compressImage, resizeDataUrl } from "./images.js";
 import { describeError } from "./errors.js";
 import { buildProduct } from "./product.js";
 import { initSettings } from "./settings-ui.js";
+import { normalizeWhatsapp, resolveWhatsapp } from "./contact.js";
 
 const $app = document.getElementById("app");
 const $search = document.getElementById("search");
@@ -40,7 +41,11 @@ async function showDetail(id) {
   const p = await store.getProduct(id);
   if (!p) { $app.innerHTML = '<p class="msg">Este producto ya no existe. <a href="#/">Ver catálogo</a></p>'; return; }
   document.title = `${p.name} · El Flamingo`;
-  $app.innerHTML = detailHTML(p, { pageUrl: location.href.split("#")[0] + "#/producto/" + encodeURIComponent(p.id) });
+  // RF-11: número de WhatsApp desde Firestore (site/contact); si falla, el de config.js
+  let whatsapp = APP.whatsapp;
+  try { whatsapp = resolveWhatsapp(await store.getContact(), APP.whatsapp); }
+  catch { whatsapp = APP.whatsapp; }
+  $app.innerHTML = detailHTML(p, { pageUrl: location.href.split("#")[0] + "#/producto/" + encodeURIComponent(p.id), whatsapp });
   $app.querySelectorAll("[data-thumb]").forEach((b) => b.addEventListener("click", () => {
     document.getElementById("mainPh").src = p.photos[b.dataset.thumb];
     $app.querySelectorAll("[data-thumb]").forEach((x) => x.setAttribute("aria-current", x === b));
@@ -67,8 +72,20 @@ async function showAdmin() {
   }
   cache = null;
   const [list, costs] = await Promise.all([products(), store.listCosts()]);
+  // RF-11: número actual de WhatsApp (site/contact); respaldo config.js; si falla la lectura, vacío
+  let currentWa = "";
+  try { currentWa = resolveWhatsapp(await store.getContact(), APP.whatsapp); }
+  catch { currentWa = APP.whatsapp; }
+  const contactCard = `<section class="contact-card" id="contactCard" aria-label="Contacto de WhatsApp">
+      <h3>Contacto de WhatsApp</h3>
+      <label for="waNumber">Número de WhatsApp</label>
+      <input type="text" id="waNumber" inputmode="tel" autocomplete="off" value="${h(currentWa)}" placeholder="código de país + número, sin + ni espacios. Ej. 52XXXXXXXXXX">
+      <p class="err" id="waErr" role="alert"></p>
+      <p class="contact-actions"><button type="button" class="btn" id="waSave">Guardar</button></p>
+    </section>`;
   $app.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><h2>Panel</h2><button class="btn ghost" id="out">Salir</button></div>
     ${summaryHTML(summarize(list, costs))}
+    ${contactCard}
     <form class="box" id="pf" novalidate>
       <h3 id="ft">Nuevo producto</h3>
       <label for="name">Nombre</label><input id="name" maxlength="80"><div class="err" data-e="name"></div>
@@ -87,6 +104,25 @@ async function showAdmin() {
   resetForm();
 }
 
+/* RF-11: guardar número de WhatsApp del admin en site/contact */
+async function onSaveContact() {
+  const input = document.getElementById("waNumber");
+  const err = document.getElementById("waErr");
+  const n = normalizeWhatsapp(input.value);
+  if (!n) {
+    err.textContent = "Número inválido: usa código de país + número (11 a 15 dígitos), sin '+' ni espacios. Ej. 52XXXXXXXXXX.";
+    return;
+  }
+  err.textContent = "";
+  try {
+    await store.saveContact(n);
+    input.value = n;
+    toast("Número guardado");
+  } catch (e) {
+    err.textContent = describeError(e);
+  }
+}
+
 const f = () => document.getElementById("pf");
 const fv = (id) => document.getElementById(id).value;
 
@@ -103,6 +139,7 @@ function updMargin() {
 function bindAdmin() {
   document.getElementById("out").addEventListener("click", () => authM.signOut(auth));
   document.getElementById("btnClear").addEventListener("click", resetForm);
+  document.getElementById("waSave").addEventListener("click", onSaveContact);
   ["price", "cost"].forEach((id) => document.getElementById(id).addEventListener("input", updMargin));
   document.getElementById("files").addEventListener("change", async (e) => {
     for (const file of e.target.files) {

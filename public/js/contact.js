@@ -35,3 +35,9 @@ export function contactUrl(number, product, { pageUrl = "", priceText = "" } = {
   if (!n) return "";
   return `https://wa.me/${n}?text=${encodeURIComponent(buildMessage(product, { pageUrl, priceText }))}`;
 }
+
+/* RF-11: número efectivo; el remoto (Firestore site/contact) manda; si no es
+ * válido se usa el fallback (APP.whatsapp de config.js); si tampoco, "". */
+export function resolveWhatsapp(remote, fallback) {
+  return normalizeWhatsapp(remote) || normalizeWhatsapp(fallback) || "";
+}

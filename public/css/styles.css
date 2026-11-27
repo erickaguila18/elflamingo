@@ -74,3 +74,10 @@ fieldset.theme-group legend{font-weight:600;padding:0 .4rem}
 .summary-value.bad{color:var(--bad)}
 .summary-sub{margin:.35rem 0 0;font-size:.82rem;color:var(--mute)}
 .summary-warn,.summary-note{grid-column:1/-1;margin:0;font-size:.8rem;color:var(--mute)}
+
+/* ---------- Contacto de WhatsApp (RF-11) ---------- */
+.contact-card{background:var(--card);border:1.5px solid var(--line);border-top:3px solid var(--pink);border-radius:1.4rem;padding:1.1rem 1.2rem;margin:0 0 1.5rem;min-width:0}
+.contact-card h3{margin:0;font-size:.95rem;font-weight:700;color:var(--ink)}
+.contact-card label{margin-top:.8rem}
+.contact-card input{max-width:24rem}
+.contact-actions{margin:.8rem 0 0}

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalizeWhatsapp, buildMessage, contactUrl } from "../public/js/contact.js";
+import { normalizeWhatsapp, buildMessage, contactUrl, resolveWhatsapp } from "../public/js/contact.js";
 
 /* ---------- normalizeWhatsapp ---------- */
 
@@ -129,4 +129,25 @@ test("contactUrl producto agotado usa mensaje y cambia texto", () => {
   const url = contactUrl(WA_NUMBER, { ...PRODUCT, availability: "agotado" }, { pageUrl: "https://x.test", priceText: "$100.00" });
   const msg = decodeURIComponent(url.slice(url.indexOf("?text=") + 6));
   assert.ok(msg.startsWith('Hola, vi el juguete "Osito" y aparece agotado.'));
+});
+
+/* ---------- resolveWhatsapp (RF-11) ---------- */
+
+test("resolveWhatsapp devuelve el remoto si es válido", () => {
+  assert.equal(resolveWhatsapp("+52 55 1234 5678", "525512345680"), "525512345678");
+});
+
+test("resolveWhatsapp usa el fallback si el remoto no es válido", () => {
+  assert.equal(resolveWhatsapp("", "+52 55 1234 5680"), "525512345680");
+  assert.equal(resolveWhatsapp(null, "525512345680"), "525512345680");
+  assert.equal(resolveWhatsapp(undefined, "525512345680"), "525512345680");
+  assert.equal(resolveWhatsapp("no-es-numero", "525512345680"), "525512345680");
+  assert.equal(resolveWhatsapp("5512345678", "525512345680"), "525512345680"); // remoto de 10 dígitos
+});
+
+test("resolveWhatsapp devuelve '' si ninguno es válido", () => {
+  assert.equal(resolveWhatsapp("", ""), "");
+  assert.equal(resolveWhatsapp("abc", "123"), "");
+  assert.equal(resolveWhatsapp(null, null), "");
+  assert.equal(resolveWhatsapp("", "no-es-numero"), "");
 });
