@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { summaryHTML } from "../public/js/views.js";
+import { summaryHTML, detailHTML } from "../public/js/views.js";
 import { summarize } from "../public/js/stats.js";
 import { formatPrice, escapeHtml } from "../public/js/format.js";
 import { APP } from "../public/js/config.js";
@@ -69,4 +69,51 @@ test("ganancia en clase ok si es positiva y bad si es negativa", () => {
   assert.match(positive, /summary-value ok[^"]*"[^>]*>[^<]*<\/p>/);
   const negative = summaryHTML(summarize([A], { a: 500 })); // ganancia -400
   assert.ok(negative.includes("summary-value bad"), "ganancia negativa en bad");
+});
+
+/* ---------- detailHTML · botón de WhatsApp (RF-08) ---------- */
+
+const WA_PRODUCT = { id: "p1", name: "Osito", description: "Suave", price: 100, availability: "disponible", photos: ["x"], thumb: "x" };
+const WA_NUMBER = "+52 55 1234 5678";
+
+test("detailHTML sin número no hay botón de WhatsApp", () => {
+  const html = detailHTML(WA_PRODUCT, { whatsapp: "" });
+  assert.ok(!html.includes("wa.me"), "no hay enlace wa.me");
+  assert.ok(!html.includes("Preguntar por WhatsApp"), "no hay botón disponible");
+  assert.ok(!html.includes("Preguntar cuándo habrá"), "no hay botón agotado");
+});
+
+test("detailHTML sin número válido no hay botón de WhatsApp", () => {
+  const html = detailHTML(WA_PRODUCT, { whatsapp: "no-es-un-numero" });
+  assert.ok(!html.includes("wa.me"));
+  assert.ok(!html.includes("Preguntar"));
+});
+
+test("detailHTML con número hay enlace wa.me en pestaña nueva con rel=noopener", () => {
+  const html = detailHTML(WA_PRODUCT, { whatsapp: WA_NUMBER, pageUrl: "https://x.test/#/producto/p1" });
+  assert.ok(html.includes("https://wa.me/525512345678?text="), "enlace wa.me con dígitos y mensaje codificado");
+  assert.ok(html.includes('target="_blank"'), "target=_blank");
+  assert.ok(html.includes('rel="noopener"'), "rel=noopener");
+  assert.ok(html.includes("Preguntar por WhatsApp"), "texto del botón disponible");
+  assert.ok(!html.includes("Preguntar cuándo habrá"));
+});
+
+test("detailHTML producto agotado muestra 'Preguntar cuándo habrá'", () => {
+  const html = detailHTML({ ...WA_PRODUCT, availability: "agotado" }, { whatsapp: WA_NUMBER });
+  assert.ok(html.includes("Preguntar cuándo habrá"), "texto del botón agotado");
+  assert.ok(!html.includes("Preguntar por WhatsApp"));
+  assert.ok(html.includes("https://wa.me/525512345678?text="));
+});
+
+test("detailHTML el nombre con <script> aparece escapado", () => {
+  const html = detailHTML({ ...WA_PRODUCT, name: "<script>alert(1)</script>" }, { whatsapp: WA_NUMBER });
+  assert.ok(!html.includes("<script>"), "no hay etiqueta script sin escapar");
+  assert.ok(html.includes("&lt;script&gt;"), "nombre escapado con escapeHtml");
+  assert.ok(!html.includes(encodeURIComponent("<script>alert(1)</script>") + '"'), "el enlace no inyecta HTML");
+});
+
+test("detailHTML no incluye el precio de inversión en el mensaje de WhatsApp", () => {
+  const html = detailHTML({ ...WA_PRODUCT, cost: 424242 }, { whatsapp: WA_NUMBER, pageUrl: "https://x.test" });
+  assert.ok(!html.includes("424242"));
+  assert.ok(!html.includes(encodeURIComponent("424242")));
 });

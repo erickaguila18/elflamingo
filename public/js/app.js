@@ -40,7 +40,7 @@ async function showDetail(id) {
   const p = await store.getProduct(id);
   if (!p) { $app.innerHTML = '<p class="msg">Este producto ya no existe. <a href="#/">Ver catálogo</a></p>'; return; }
   document.title = `${p.name} · El Flamingo`;
-  $app.innerHTML = detailHTML(p);
+  $app.innerHTML = detailHTML(p, { pageUrl: location.href.split("#")[0] + "#/producto/" + encodeURIComponent(p.id) });
   $app.querySelectorAll("[data-thumb]").forEach((b) => b.addEventListener("click", () => {
     document.getElementById("mainPh").src = p.photos[b.dataset.thumb];
     $app.querySelectorAll("[data-thumb]").forEach((x) => x.setAttribute("aria-current", x === b));

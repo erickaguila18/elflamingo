@@ -22,3 +22,5 @@
 - [x] T23 Leer costos en store.js `listCosts` (RF-10)
 - [x] T24 Tarjetas de resumen en el panel admin
 - [x] T25 Pruebas de summaryHTML
+- [x] T26 Módulo contact.js con pruebas (normalizeWhatsapp, buildMessage, contactUrl) (RF-08)
+- [x] T27 Botón de WhatsApp en el detalle con mensaje prellenado (RF-08)

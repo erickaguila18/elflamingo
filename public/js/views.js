@@ -1,5 +1,6 @@
-import { escapeHtml as h, formatPrice, availabilityLabel, whatsappLink } from "./format.js";
+import { escapeHtml as h, formatPrice, availabilityLabel } from "./format.js";
 import { APP } from "./config.js";
+import { contactUrl } from "./contact.js";
 
 const money = (n) => formatPrice(n, APP);
 
@@ -16,9 +17,10 @@ export function listHTML(products, q = "") {
     </a>`).join("")}</section>`;
 }
 
-export function detailHTML(p) {
+export function detailHTML(p, { pageUrl = "", whatsapp = APP.whatsapp } = {}) {
   const photos = p.photos?.length ? p.photos : [p.thumb];
-  const wa = whatsappLink(APP.whatsapp, `Hola, me interesa: ${p.name}`);
+  const wa = contactUrl(whatsapp, p, { pageUrl, priceText: money(p.price) });
+  const waLabel = p.availability === "disponible" ? "Preguntar por WhatsApp" : "Preguntar cuándo habrá";
   return `<a href="#/" class="adm">Volver al catálogo</a>
   <article class="detail" style="margin-top:1rem">
     <div>
@@ -30,7 +32,7 @@ export function detailHTML(p) {
       <div class="price">${money(p.price)}</div>
       <p class="${p.availability === "disponible" ? "ok" : "bad"}">${availabilityLabel(p.availability)}</p>
       <p class="desc">${h(p.description)}</p>
-      ${wa ? `<a class="btn" href="${h(wa)}" target="_blank" rel="noopener">Preguntar por WhatsApp</a>` : ""}
+      ${wa ? `<a class="btn" href="${h(wa)}" target="_blank" rel="noopener">${waLabel}</a>` : ""}
     </div>
   </article>`;
 }

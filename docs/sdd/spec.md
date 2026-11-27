@@ -9,7 +9,11 @@
 - **RF-05 Margen**: el panel muestra el margen % = (precio − inversión) / precio.
 - **RF-06 Privacidad**: el precio de inversión solo lo lee el admin.
 - **RF-07 Enlace directo**: `#/producto/:id` es compartible.
-- **RF-08 WhatsApp (opcional)**: si `APP.whatsapp` está configurado, el detalle muestra botón de contacto.
+- **RF-08 Botón de WhatsApp en el detalle del producto; abre el chat con un mensaje prellenado con el nombre, el precio y el enlace del producto.**
+  - Sin número configurado, el botón no se muestra.
+  - Con número válido, el enlace es `https://wa.me/<dígitos>?text=<mensaje codificado>` y se abre en pestaña nueva con `rel="noopener"`.
+  - Si el producto está agotado, el mensaje y el texto del botón cambian ("Preguntar cuándo habrá").
+  - El mensaje nunca incluye el precio de inversión.
 - **RF-09 Configuración**: el visitante puede elegir tema Sistema, Claro u Oscuro desde un botón de configuración.
 - **RF-10 Resumen del panel admin**: el admin ve el total de productos (con disponibles y agotados), la inversión total, el valor de venta total y la ganancia estimada con su margen %. Cada producto cuenta como 1 unidad (no hay campo de cantidad). El resumen solo se ve con sesión de admin; la inversión proviene de `products_private`, que solo el admin puede leer. Solo los productos con precio numérico válido y costo numérico válido entran en los cálculos de dinero; los productos sin costo registrado (o con costo inválido) no entran y se informa cuántos hay. ganancia = valor de venta − inversión; margen % = ganancia / valor de venta * 100 redondeado a 1 decimal (no se muestra si el valor de venta es 0); importes redondeados a 2 decimales. La lógica vive en el módulo puro `stats.js` (`summarize`) y los costos se leen con `listCosts()` de `store.js`.
   - Presentación (T24): el admin ve el resumen arriba del panel, bajo el título «Panel» y antes del formulario, en cuatro tarjetas «Productos» (total con «N disponibles · N agotados»), «Inversión total», «Valor de venta» y «Ganancia estimada» (con «Margen: X%» solo si `marginPct` no es null); importes con `formatPrice`; si `withoutCost > 0` se informa «N producto(s) sin costo registrado, no incluidos en los importes»; nota «Se cuenta 1 unidad por producto»; la ganancia se pinta en `--ok` si es positiva y `--bad` si es negativa; HTML por `summaryHTML` en `views.js`; todo texto dinámico por `escapeHtml`.
