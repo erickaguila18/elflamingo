@@ -1,6 +1,6 @@
 export const MIN_PHOTOS = 1;
 export const MAX_PHOTOS = 4;
-export const AVAILABILITY = ["disponible", "agotado"];
+export const AVAILABILITY = ["disponible", "agotado", "vendido"];
 
 export function parsePrice(v) {
   const n = Number(String(v ?? "").replace(/[$,\s]/g, ""));

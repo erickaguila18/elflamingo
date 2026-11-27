@@ -21,6 +21,11 @@
   - Un número inválido se rechaza con mensaje claro.
   - El visitante sin sesión puede leer el número pero no escribirlo.
   - Tras guardar, el botón del detalle usa el número nuevo.
+- **RF-12 Estado vendido**: el admin puede marcar un producto como vendido sin eliminarlo ni editarlo, y puede revertirlo. Disponibilidad: `disponible` | `agotado` | `vendido`.
+  - Dado un producto disponible o agotado, cuando el admin pulsa "Marcar vendido" y confirma, entonces su disponibilidad pasa a "vendido" sin modificar nombre, descripción, precios ni fotos, y el producto no se borra.
+  - Dado un producto vendido, el catálogo lo muestra con la etiqueta "Vendido" y el detalle indica "Este juguete ya fue vendido", sin botón de WhatsApp.
+  - Dado un producto vendido, el admin puede pulsar "Revertir" y vuelve a "disponible".
+  - La fecha de venta se guarda solo en products_private, nunca en products.
 
 ## Criterios de aceptación
 - Dado un visitante sin sesión, cuando consulta `products_private`, entonces Firestore rechaza la lectura (RF-06).

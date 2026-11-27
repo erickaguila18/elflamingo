@@ -12,14 +12,16 @@ export function listHTML(products, q = "") {
   }
   return `<section class="grid">${items.map((p) => `
     <a class="tile" href="#/producto/${encodeURIComponent(p.id)}">
-      <div class="ph"><img src="${h(p.thumb)}" alt="${h(p.name)}" loading="lazy">${p.availability === "agotado" ? '<span class="tag">Agotado</span>' : ""}</div>
+      <div class="ph"><img src="${h(p.thumb)}" alt="${h(p.name)}" loading="lazy">${p.availability !== "disponible" ? `<span class="tag">${h(availabilityLabel(p.availability))}</span>` : ""}</div>
       <h3>${h(p.name)}</h3><span class="price">${money(p.price)}</span>
     </a>`).join("")}</section>`;
 }
 
 export function detailHTML(p, { pageUrl = "", whatsapp = APP.whatsapp } = {}) {
   const photos = p.photos?.length ? p.photos : [p.thumb];
-  const wa = contactUrl(whatsapp, p, { pageUrl, priceText: money(p.price) });
+  // RF-12: vendido → sin botón de WhatsApp; el resto de estados siguen igual.
+  const sold = p.availability === "vendido";
+  const wa = sold ? "" : contactUrl(whatsapp, p, { pageUrl, priceText: money(p.price) });
   const waLabel = p.availability === "disponible" ? "Preguntar por WhatsApp" : "Preguntar cuándo habrá";
   return `<a href="#/" class="adm">Volver al catálogo</a>
   <article class="detail" style="margin-top:1rem">
@@ -31,6 +33,7 @@ export function detailHTML(p, { pageUrl = "", whatsapp = APP.whatsapp } = {}) {
       <h1>${h(p.name)}</h1>
       <div class="price">${money(p.price)}</div>
       <p class="${p.availability === "disponible" ? "ok" : "bad"}">${availabilityLabel(p.availability)}</p>
+      ${sold ? `<p class="bad">Este juguete ya fue vendido.</p>` : ""}
       <p class="desc">${h(p.description)}</p>
       ${wa ? `<a class="btn" href="${h(wa)}" target="_blank" rel="noopener">${waLabel}</a>` : ""}
     </div>

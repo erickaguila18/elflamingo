@@ -6,7 +6,7 @@
   "description": "Catálogo de consulta (SPA) con Firebase Firestore",
   "scripts": {
     "start": "python3 server.py",
-    "test": "node --test"
+    "test": "node --test --experimental-test-module-mocks"
   },
   "engines": { "node": ">=20" }
 }

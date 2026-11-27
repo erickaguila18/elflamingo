@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { summaryHTML, detailHTML } from "../public/js/views.js";
+import { summaryHTML, detailHTML, listHTML } from "../public/js/views.js";
 import { summarize } from "../public/js/stats.js";
 import { formatPrice, escapeHtml } from "../public/js/format.js";
 import { APP } from "../public/js/config.js";
@@ -116,4 +116,33 @@ test("detailHTML no incluye el precio de inversión en el mensaje de WhatsApp", 
   const html = detailHTML({ ...WA_PRODUCT, cost: 424242 }, { whatsapp: WA_NUMBER, pageUrl: "https://x.test" });
   assert.ok(!html.includes("424242"));
   assert.ok(!html.includes(encodeURIComponent("424242")));
+});
+
+/* ---------- estado vendido (RF-12) ---------- */
+
+const SOLD = { id: "p1", name: "Osito", description: "Suave", price: 100, availability: "vendido", photos: ["x"], thumb: "x" };
+
+test("listHTML producto vendido muestra etiqueta 'Vendido' sobre la foto", () => {
+  const html = listHTML([SOLD]);
+  assert.ok(html.includes('<span class="tag">Vendido</span>'), "etiqueta Vendido");
+});
+
+test("listHTML la etiqueta aparece para cualquier estado distinto de 'disponible'", () => {
+  const tag = (a) => listHTML([{ ...SOLD, availability: a }]);
+  assert.ok(tag("agotado").includes('<span class="tag">Agotado</span>'), "agotado → Agotado");
+  assert.ok(tag("vendido").includes('<span class="tag">Vendido</span>'), "vendido → Vendido");
+  assert.ok(!tag("disponible").includes('class="tag"'), "disponible → sin etiqueta");
+});
+
+test("detailHTML producto vendido muestra 'Este juguete ya fue vendido.'", () => {
+  const html = detailHTML(SOLD, { whatsapp: WA_NUMBER });
+  assert.ok(html.includes("Este juguete ya fue vendido."), "mensaje de vendido");
+});
+
+test("detailHTML producto vendido NO muestra botón de WhatsApp aunque haya número", () => {
+  const html = detailHTML(SOLD, { whatsapp: WA_NUMBER, pageUrl: "https://x.test/#/producto/p1" });
+  assert.ok(!html.includes("wa.me"), "no hay enlace wa.me");
+  assert.ok(!html.includes("Preguntar por WhatsApp"), "no hay botón disponible");
+  assert.ok(!html.includes("Preguntar cuándo habrá"), "no hay botón agotado");
+  assert.ok(!html.includes("Preguntar"), "ningún botón de WhatsApp");
 });

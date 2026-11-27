@@ -28,3 +28,7 @@
 - [x] T29 `getContact` / `saveContact` en store.js (RF-11)
 - [x] T30 Regla de Firestore para `site/{doc}`: lectura pública, escritura admin (RF-11)
 - [x] T31 Tarjeta "Contacto de WhatsApp" en el panel admin con Guardar (RF-11)
+- [x] T32 Estado vendido en validación y etiquetas: `AVAILABILITY` incluye `vendido`, `availabilityLabel` → «Vendido» (RF-12)
+- [x] T33 `markSold` y `markAvailable` en store.js con `writeBatch`; `soldAt` solo en `products_private` (RF-12)
+- [x] T34 Botones «Marcar vendido» / «Revertir» en el panel admin (RF-12)
+- [x] T35 Vista pública del estado vendido: etiqueta «Vendido», detalle «Este juguete ya fue vendido.» sin botón de WhatsApp (RF-12)

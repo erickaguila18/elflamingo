@@ -7,4 +7,4 @@ export function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-export const availabilityLabel = (a) => (a === "disponible" ? "Disponible" : "Agotado");
+export const availabilityLabel = (a) => (a === "disponible" ? "Disponible" : a === "vendido" ? "Vendido" : "Agotado");

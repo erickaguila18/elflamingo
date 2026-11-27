@@ -8,3 +8,4 @@ test("availabilityLabel", () => {
   assert.equal(availabilityLabel("disponible"), "Disponible");
   assert.equal(availabilityLabel("agotado"), "Agotado");
 });
+test("availabilityLabel vendido → Vendido", () => assert.equal(availabilityLabel("vendido"), "Vendido"));
