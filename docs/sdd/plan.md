@@ -1,6 +1,7 @@
 # Plan técnico
 ## Arquitectura
-`public/` (estático) → `index.html` + `js/app.js` (UI y eventos) · `views.js` (HTML puro) · `store.js` (Firestore) · `firebase.js` (carga dinámica del SDK por CDN, versión en `config.js`) · `validation.js`, `format.js`, `router.js`, `images.js`, `errors.js`, `product.js`, `settings.js` (lógica pura, probada) · `settings-ui.js` (panel de configuración).
+`public/` (estático) → `index.html` + `js/app.js` (UI y eventos) · `views.js` (HTML puro) · `store.js` (Firestore) · `firebase.js` (carga dinámica del SDK por CDN, versión en `config.js`) · `validation.js`, `format.js`, `router.js`, `images.js`, `errors.js`, `product.js`, `settings.js`, `stats.js` (lógica pura, probada) · `settings-ui.js` (panel de configuración).
+RF-10: `stats.js` `summarize(products, costs)` calcula el resumen financiero del panel admin (total disponibles/agotados, inversión, valor de venta, ganancia, margen %, conteo sin costo, desglose por disponibilidad); `store.js` `listCosts()` lee `products_private` (solo admin) y devuelve `{id: cost}`.
 Router por hash (`#/`, `#/producto/:id`, `#/admin`): funciona en cualquier servidor estático.
 
 ## Modelo de datos (Firestore, plan Spark)

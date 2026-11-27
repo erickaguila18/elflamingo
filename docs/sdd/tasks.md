@@ -18,3 +18,5 @@
 - [x] T19 Estilos de tema: `data-theme`, variables claras/oscuras, `color-scheme`, estilos del botón de configuración y del dialog (RF-09)
 - [x] T20 Interfaz del panel: botón `#settingsBtn`, `dialog#settings`, `initSettings()` en settings-ui.js; script inline sin parpadeo (RF-09)
 - [x] T21 Corregir alineación del encabezado
+- [x] T22 Módulo stats.js con pruebas (RF-10)
+- [x] T23 Leer costos en store.js `listCosts` (RF-10)
