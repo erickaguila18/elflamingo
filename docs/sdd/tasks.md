@@ -28,3 +28,4 @@
 - [x] T29 `getContact` / `saveContact` en store.js (RF-11)
 - [x] T30 Regla de Firestore para `site/{doc}`: lectura pública, escritura admin (RF-11)
 - [x] T31 Tarjeta "Contacto de WhatsApp" en el panel admin con Guardar (RF-11)
+- [x] T38 Corregir prueba de store que rompía el CI
