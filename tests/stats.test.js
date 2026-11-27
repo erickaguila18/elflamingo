@@ -12,15 +12,19 @@ test("ejemplo de la spec: A disponible 100/60 + B agotado 200/150", () => {
     totalProducts: 2,
     available: 1,
     soldOut: 1,
+    sold: 0,
     withCost: 2,
     withoutCost: 0,
     investment: 210,
     salesValue: 300,
     profit: 90,
     marginPct: 30,
+    realizedProfit: 0,
+    pendingProfit: 90,
     byAvailability: {
       disponible: { count: 1, investment: 60, salesValue: 100, profit: 40 },
       agotado: { count: 1, investment: 150, salesValue: 200, profit: 50 },
+      vendido: { count: 0, investment: 0, salesValue: 0, profit: 0 },
     },
   });
 });
@@ -31,15 +35,19 @@ test("catálogo vacío: todos los totales son 0 y el margen no se muestra", () =
     totalProducts: 0,
     available: 0,
     soldOut: 0,
+    sold: 0,
     withCost: 0,
     withoutCost: 0,
     investment: 0,
     salesValue: 0,
     profit: 0,
     marginPct: null,
+    realizedProfit: 0,
+    pendingProfit: 0,
     byAvailability: {
       disponible: { count: 0, investment: 0, salesValue: 0, profit: 0 },
       agotado: { count: 0, investment: 0, salesValue: 0, profit: 0 },
+      vendido: { count: 0, investment: 0, salesValue: 0, profit: 0 },
     },
   });
   assert.deepEqual(summarize([]), r);
@@ -149,4 +157,81 @@ test("cada producto cuenta como 1 unidad (no hay campo de cantidad)", () => {
   assert.equal(r.investment, 60);
   assert.equal(r.salesValue, 100);
   assert.equal(r.profit, 40);
+});
+
+/* ---------- vendidos: sold, bucket vendido, realizedProfit, pendingProfit (RF-10 + RF-12) ---------- */
+
+test("ejemplo spec vendido: A disponible 100/60 + B vendido 200/150", () => {
+  const products = [
+    { id: "a", price: 100, availability: "disponible" },
+    { id: "b", price: 200, availability: "vendido" },
+  ];
+  const r = summarize(products, { a: 60, b: 150 });
+  // 2 productos: 1 disponible, 0 agotados, 1 vendido
+  assert.equal(r.totalProducts, 2);
+  assert.equal(r.available, 1);
+  assert.equal(r.soldOut, 0);
+  assert.equal(r.sold, 1);
+  // los totales de dinero siguen incluyendo todos los productos con costo válido
+  assert.equal(r.withCost, 2);
+  assert.equal(r.withoutCost, 0);
+  assert.equal(r.investment, 210);
+  assert.equal(r.salesValue, 300);
+  assert.equal(r.profit, 90);
+  assert.equal(r.marginPct, 30);
+  // ganancia realizada vs por realizar
+  assert.equal(r.realizedProfit, 50);
+  assert.equal(r.pendingProfit, 40);
+  assert.deepEqual(r.byAvailability.vendido, { count: 1, investment: 150, salesValue: 200, profit: 50 });
+  assert.deepEqual(r.byAvailability.disponible, { count: 1, investment: 60, salesValue: 100, profit: 40 });
+  assert.deepEqual(r.byAvailability.agotado, { count: 0, investment: 0, salesValue: 0, profit: 0 });
+});
+
+test("catálogo sin vendidos: sold 0, cubeta vendido vacía y realizedProfit 0", () => {
+  const products = [
+    { id: "a", price: 100, availability: "disponible" },
+    { id: "b", price: 200, availability: "agotado" },
+  ];
+  const r = summarize(products, { a: 60, b: 150 });
+  assert.equal(r.sold, 0);
+  assert.equal(r.realizedProfit, 0);
+  assert.equal(r.pendingProfit, 90); // sin vendidos, todo es por realizar
+  assert.deepEqual(r.byAvailability.vendido, { count: 0, investment: 0, salesValue: 0, profit: 0 });
+});
+
+test("vendido sin costo válido: no entra en los cálculos de dinero; sigue contando como vendido", () => {
+  const products = [
+    { id: "a", price: 100, availability: "disponible" },
+    { id: "b", price: 200, availability: "vendido" },
+  ];
+  for (const costs of [{ a: 60 }, { a: 60, b: NaN }, { a: 60, b: "abc" }]) {
+    const r = summarize(products, costs);
+    assert.equal(r.sold, 1, `vendido cuenta con costos ${JSON.stringify(costs)}`);
+    assert.equal(r.withoutCost, 1);
+    assert.equal(r.withCost, 1);
+    assert.equal(r.investment, 60);
+    assert.equal(r.salesValue, 100);
+    assert.equal(r.profit, 40);
+    // no aporta nada a la ganancia realizada; lo pendiente no cambia
+    assert.equal(r.realizedProfit, 0);
+    assert.equal(r.pendingProfit, 40);
+    assert.deepEqual(r.byAvailability.vendido, { count: 1, investment: 0, salesValue: 0, profit: 0 });
+  }
+});
+
+test("estados distintos de 'disponible' y 'vendido' siguen yendo a 'agotado'", () => {
+  const products = [
+    { id: "a", price: 100, availability: "agotado" },
+    { id: "b", price: 100, availability: "otro" },
+    { id: "c", price: 100 }, // sin availability
+  ];
+  const r = summarize(products, { a: 50, b: 50, c: 50 });
+  assert.equal(r.available, 0);
+  assert.equal(r.sold, 0);
+  assert.equal(r.soldOut, 3);
+  assert.equal(r.byAvailability.agotado.count, 3);
+  assert.equal(r.byAvailability.vendido.count, 0);
+  // un agotado cuenta como pendiente de realizar, no como realizada
+  assert.equal(r.realizedProfit, 0);
+  assert.equal(r.pendingProfit, 150);
 });

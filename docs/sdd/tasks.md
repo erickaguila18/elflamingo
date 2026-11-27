@@ -32,3 +32,5 @@
 - [x] T33 `markSold` y `markAvailable` en store.js con `writeBatch`; `soldAt` solo en `products_private` (RF-12)
 - [x] T34 Botones «Marcar vendido» / «Revertir» en el panel admin (RF-12)
 - [x] T35 Vista pública del estado vendido: etiqueta «Vendido», detalle «Este juguete ya fue vendido.» sin botón de WhatsApp (RF-12)
+- [x] T36 Stats con vendidos: `sold`, tercera cubeta `vendido` en byAvailability (estados distintos de `disponible`/`vendido` → `agotado`), `realizedProfit` (profit de `vendido`) y `pendingProfit` (profit de `disponible` + `agotado`); se mantienen investment/salesValue/profit/marginPct con todos los productos con costo válido; pruebas del ejemplo A + B vendido, catálogo sin vendidos, vendido sin costo válido (RF-10 + RF-12)
+- [x] T37 Tarjetas del resumen: «Productos» N disponibles · N agotados · N vendidos; «Ganancia estimada» total + «Realizada: X · Por realizar: Y»; pruebas de summaryHTML (RF-10)

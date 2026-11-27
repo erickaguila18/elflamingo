@@ -42,14 +42,19 @@ export function detailHTML(p, { pageUrl = "", whatsapp = APP.whatsapp } = {}) {
 
 /* Resumen del panel admin (RF-10): `s` es el resultado de summarize().
  * Cuatro tarjetas: Productos · Inversión total · Valor de venta · Ganancia estimada.
+ * Productos: «N disponibles · N agotados · N vendidos».
+ * Ganancia estimada: total + «Realizada: X · Por realizar: Y» (+ «Margen: X%»).
  * Todo texto dinámico por escapeHtml; importes con formatPrice + APP. */
 export function summaryHTML(s) {
   const num = (n) => (typeof n === "number" && Number.isFinite(n) ? n : 0);
   const total = num(s?.totalProducts);
   const available = num(s?.available);
   const soldOut = num(s?.soldOut);
+  const sold = num(s?.sold);
   const withoutCost = num(s?.withoutCost);
   const profit = num(s?.profit);
+  const realizedProfit = num(s?.realizedProfit);
+  const pendingProfit = num(s?.pendingProfit);
   const marginPct = s?.marginPct ?? null;
   const hasMargin = marginPct !== null && Number.isFinite(marginPct);
   const profitClass = profit > 0 ? " ok" : profit < 0 ? " bad" : "";
@@ -60,11 +65,14 @@ export function summaryHTML(s) {
       <p class="summary-value${cls}">${value}</p>${sub}
     </article>`;
 
+  const profitSub = `<p class="summary-sub">Realizada: ${h(money(realizedProfit))} · Por realizar: ${h(money(pendingProfit))}</p>`
+    + (hasMargin ? `<p class="summary-sub">Margen: ${h(String(marginPct))}%</p>` : "");
+
   const cards = [
-    card("Productos", h(String(total)), `<p class="summary-sub">${h(String(available))} disponibles · ${h(String(soldOut))} agotados</p>`),
+    card("Productos", h(String(total)), `<p class="summary-sub">${h(String(available))} disponibles · ${h(String(soldOut))} agotados · ${h(String(sold))} vendidos</p>`),
     card("Inversión total", h(money(num(s?.investment)))),
     card("Valor de venta", h(money(num(s?.salesValue)))),
-    card("Ganancia estimada", h(money(profit)), hasMargin ? `<p class="summary-sub">Margen: ${h(String(marginPct))}%</p>` : "", profitClass),
+    card("Ganancia estimada", h(money(profit)), profitSub, profitClass),
   ].join("");
 
   const withoutCostNote = withoutCost > 0
