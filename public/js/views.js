@@ -34,3 +34,40 @@ export function detailHTML(p) {
     </div>
   </article>`;
 }
+
+/* Resumen del panel admin (RF-10): `s` es el resultado de summarize().
+ * Cuatro tarjetas: Productos · Inversión total · Valor de venta · Ganancia estimada.
+ * Todo texto dinámico por escapeHtml; importes con formatPrice + APP. */
+export function summaryHTML(s) {
+  const num = (n) => (typeof n === "number" && Number.isFinite(n) ? n : 0);
+  const total = num(s?.totalProducts);
+  const available = num(s?.available);
+  const soldOut = num(s?.soldOut);
+  const withoutCost = num(s?.withoutCost);
+  const profit = num(s?.profit);
+  const marginPct = s?.marginPct ?? null;
+  const hasMargin = marginPct !== null && Number.isFinite(marginPct);
+  const profitClass = profit > 0 ? " ok" : profit < 0 ? " bad" : "";
+
+  const card = (title, value, sub = "", cls = "") => `
+    <article class="summary-card">
+      <h3 class="summary-title">${title}</h3>
+      <p class="summary-value${cls}">${value}</p>${sub}
+    </article>`;
+
+  const cards = [
+    card("Productos", h(String(total)), `<p class="summary-sub">${h(String(available))} disponibles · ${h(String(soldOut))} agotados</p>`),
+    card("Inversión total", h(money(num(s?.investment)))),
+    card("Valor de venta", h(money(num(s?.salesValue)))),
+    card("Ganancia estimada", h(money(profit)), hasMargin ? `<p class="summary-sub">Margen: ${h(String(marginPct))}%</p>` : "", profitClass),
+  ].join("");
+
+  const withoutCostNote = withoutCost > 0
+    ? `<p class="summary-warn">${h(String(withoutCost))} producto(s) sin costo registrado, no incluidos en los importes</p>`
+    : "";
+
+  return `<section class="summary" aria-label="Resumen del panel">
+    ${cards}${withoutCostNote}
+    <p class="summary-note">Se cuenta 1 unidad por producto</p>
+  </section>`;
+}

@@ -63,3 +63,14 @@ fieldset.theme-group legend{font-weight:600;padding:0 .4rem}
 .theme-opt{display:flex;align-items:center;gap:.6rem;margin:0;font-weight:400;cursor:pointer}
 .theme-opt input{width:1.15rem;height:1.15rem;margin:0;accent-color:var(--pink)}
 @media(max-width:760px){#settings{max-width:calc(100vw - 1.5rem);padding:1.1rem}}
+
+/* ---------- Resumen del panel admin (RF-10) ---------- */
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.5rem 0}
+@media(min-width:761px){.summary{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.summary-card{background:var(--card);border:1.5px solid var(--line);border-top:3px solid var(--pink);border-radius:1.4rem;padding:1.1rem 1.2rem;min-width:0}
+.summary-title{margin:0;font-size:.85rem;font-weight:600;color:var(--mute)}
+.summary-value{margin:.4rem 0 0;font-size:clamp(1.15rem,2.5vw,1.45rem);font-weight:800;color:var(--ink);overflow-wrap:anywhere}
+.summary-value.ok{color:var(--ok)}
+.summary-value.bad{color:var(--bad)}
+.summary-sub{margin:.35rem 0 0;font-size:.82rem;color:var(--mute)}
+.summary-warn,.summary-note{grid-column:1/-1;margin:0;font-size:.8rem;color:var(--mute)}

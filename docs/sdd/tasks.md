@@ -20,3 +20,5 @@
 - [x] T21 Corregir alineación del encabezado
 - [x] T22 Módulo stats.js con pruebas (RF-10)
 - [x] T23 Leer costos en store.js `listCosts` (RF-10)
+- [x] T24 Tarjetas de resumen en el panel admin
+- [x] T25 Pruebas de summaryHTML
