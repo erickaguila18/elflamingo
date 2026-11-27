@@ -19,6 +19,12 @@ export async function getCost(id) {
   return s.exists() ? s.data().cost : null;
 }
 
+// RF-10: lee toda la colección products_private (solo admin) y devuelve {id: cost}
+export async function listCosts() {
+  const snap = await getDocs(collection(db, "products_private"));
+  return Object.fromEntries(snap.docs.map((d) => [d.id, d.data().cost]));
+}
+
 export async function saveProduct({ id, data, cost, photos, thumb }) {
   const ref = id ? doc(db, "products", id) : doc(collection(db, "products"));
   const batch = writeBatch(db);

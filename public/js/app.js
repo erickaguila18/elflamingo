@@ -1,7 +1,8 @@
 import { auth, authM } from "./firebase.js";
 import * as store from "./store.js";
 import { parseRoute } from "./router.js";
-import { listHTML, detailHTML } from "./views.js";
+import { listHTML, detailHTML, summaryHTML } from "./views.js";
+import { summarize } from "./stats.js";
 import { escapeHtml as h, formatPrice } from "./format.js";
 import { APP } from "./config.js";
 import { validateProduct, parsePrice, margin, MAX_PHOTOS, AVAILABILITY } from "./validation.js";
@@ -65,8 +66,9 @@ async function showAdmin() {
     return;
   }
   cache = null;
-  const list = await products();
+  const [list, costs] = await Promise.all([products(), store.listCosts()]);
   $app.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><h2>Panel</h2><button class="btn ghost" id="out">Salir</button></div>
+    ${summaryHTML(summarize(list, costs))}
     <form class="box" id="pf" novalidate>
       <h3 id="ft">Nuevo producto</h3>
       <label for="name">Nombre</label><input id="name" maxlength="80"><div class="err" data-e="name"></div>

@@ -1,6 +1,7 @@
 # Plan técnico
 ## Arquitectura
-`public/` (estático) → `index.html` + `js/app.js` (UI y eventos) · `views.js` (HTML puro) · `store.js` (Firestore) · `firebase.js` (carga dinámica del SDK por CDN, versión en `config.js`) · `validation.js`, `format.js`, `router.js`, `images.js`, `errors.js`, `product.js`, `settings.js` (lógica pura, probada) · `settings-ui.js` (panel de configuración).
+`public/` (estático) → `index.html` + `js/app.js` (UI y eventos) · `views.js` (HTML puro) · `store.js` (Firestore) · `firebase.js` (carga dinámica del SDK por CDN, versión en `config.js`) · `validation.js`, `format.js`, `router.js`, `images.js`, `errors.js`, `product.js`, `settings.js`, `stats.js` (lógica pura, probada) · `settings-ui.js` (panel de configuración).
+RF-10: `stats.js` `summarize(products, costs)` calcula el resumen financiero del panel admin (total disponibles/agotados, inversión, valor de venta, ganancia, margen %, conteo sin costo, desglose por disponibilidad); `store.js` `listCosts()` lee `products_private` (solo admin) y devuelve `{id: cost}`. Presentación: `views.js` `summaryHTML(s)` pinta cuatro tarjetas («Productos», «Inversión total», «Valor de venta», «Ganancia estimada» + «Margen: X%», línea de sin costo, nota «Se cuenta 1 unidad por producto») con `formatPrice` + `escapeHtml`; `showAdmin` carga `Promise.all([products(), store.listCosts()])`, calcula `summarize(list, costs)` e inserta el HTML bajo «Panel» antes del formulario; CSS `.summary` rejilla 2 columnas en móvil / 4 en pantallas anchas con variables existentes (`--card`, `--line`, `--ink`, `--mute`, `--pink`, `--ok`, `--bad`).
 Router por hash (`#/`, `#/producto/:id`, `#/admin`): funciona en cualquier servidor estático.
 
 ## Modelo de datos (Firestore, plan Spark)
