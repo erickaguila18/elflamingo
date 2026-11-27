@@ -19,3 +19,4 @@ Catálogo de consulta (SPA) en HTML + JS vanilla (módulos ES, sin build), servi
 - La lógica pura va en módulos sin DOM ni Firebase (`validation`, `format`, `router`, `images`) para poder probarla.
 - No subir secretos. La config web de Firebase es pública; la seguridad son las reglas.
 - Una versión del SDK, definida solo en `public/js/config.js`.
+- No usar mock.module ni flags experimentales de Node. Lo que depende de Firebase se prueba con el emulador; la lógica pura va en módulos sin Firebase.
